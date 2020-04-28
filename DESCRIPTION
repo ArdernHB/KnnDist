@@ -1,0 +1,26 @@
+Package: KnnDist
+Type: Package
+Title: Kernal Nearest Neighbour classification with distance inputs
+Version: 0.1.0
+Authors@R: person("Ardern", "Hulme-Beaman", email = "ardernhb@gmail.com", role = c("aut", "cre"))
+Author: Ardern Hulme-Beaman [aut, cre]
+Maintainer: Ardern Hulme-Beaman <ardernhb@gmail.com>
+Description: This package takes distance inputs constructed by the user and returns classifications using Kernal Nearest Neighbour (K-NN) methods. Current implimentation includes a simple majority vote process or a simple weighting system using the distances supplied as weights.
+Depends:
+    R (>= 3.5)
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/ArdernHB/KnnDist
+BugReports: https://github.com/ArdernHB/KnnDist
+RoxygenNote: 7.1.0
+Imports:
+    grDevices (>= 3.5.3),
+    shapes (>= 1.2.5),
+    svMisc (>= 1.1.0),
+    iterators (>= 1.0.12),
+    parallel (>= 3.5.3),
+    doParallel (>= 1.0.15),
+    foreach (>= 1.5.0)
+Suggests: 
+    testthat
