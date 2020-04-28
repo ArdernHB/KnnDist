@@ -204,7 +204,7 @@ KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, Sa
 
 
 KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualIter=100, SampleSize=NA, TieBreaker=c('Random', 'Remove', 'Report'), Weighted=FALSE, Verbose=FALSE, IgnorePrompts=FALSE, PrintProg=TRUE, PlotResults=TRUE){
-
+  #DistMat = RatDistMat; GroupMembership = Grps; Kmax = 20; Equal = FALSE; Weighted = TRUE; Verbose = TRUE; TieBreaker = 'Remove'; PlotResults = TRUE
   #Kmax=20
   #DistMat=ProcDTableRes; GroupMembership=Groups; K=10; Equal=TRUE; EqualIter=100
   #Weighted=TRUE; TieBreaker='Report'
@@ -316,7 +316,7 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
     }
 
     #Removing the first row bbecause this will represent the distance 0 i.e. the distance from the column specimen to itself
-    KArray <- array(data = NA, dim = c(dim(SortedDistMat[,i]), 2))
+    KArray <- array(data = NA, dim = c(dim(SortedDistMat[-1,]), 2))
     KArray[,,1] <- SortedDistMat[-1,]
     KArray[,,2] <- AdjSortedDistMat[-1,]
 
