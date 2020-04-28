@@ -205,11 +205,6 @@ KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, Sa
 
 KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualIter=100, SampleSize=NA, TieBreaker=c('Random', 'Remove', 'Report'), Weighted=FALSE, Verbose=FALSE, IgnorePrompts=FALSE, PrintProg=TRUE, PlotResults=TRUE){
   #DistMat = RatDistMat; GroupMembership = Grps; Kmax = 20; Equal = FALSE; Weighted = TRUE; Verbose = TRUE; TieBreaker = 'Remove'; PlotResults = TRUE
-  #Kmax=20
-  #DistMat=ProcDTableRes; GroupMembership=Groups; K=10; Equal=TRUE; EqualIter=100
-  #Weighted=TRUE; TieBreaker='Report'
-  #PrintProg=TRUE
-  #Verbose=TRUE; Equal=TRUE
 
   MinSamp <- min(table(GroupMembership))
 
