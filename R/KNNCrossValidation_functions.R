@@ -296,7 +296,7 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
               border = NA)
       graphics::lines(y = colMeans(ResultsTable$Unweighted.Results*100), x = 1:Kmax, col='lightblue', lwd=3)
 
-      graphics::legend('bottomright', legend = c('Unweighted', 'Weighted'), col = c('darkblue', 'lightblue'), lty=1, lwd=3, bty = 'o')
+      graphics::legend('bottomright', legend = c('Weighted', 'Unweighted'), col = c('darkblue', 'lightblue'), lty=1, lwd=3, bty = 'o')
     }
 
   } else {
@@ -359,7 +359,7 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
       graphics::lines(y = colMeans(ResultsTable$Unweighted.Results*100), x = 1:Kmax, col='lightblue', lwd=3)
     }
 
-    graphics::legend('bottomright', legend = c('Unweighted', 'Weighted'), col = c('darkblue', 'lightblue'), lty=1, lwd=3, bty = 'o')
+    graphics::legend('bottomright', legend = c('Weighted', 'Unweighted'), col = c('darkblue', 'lightblue'), lty=1, lwd=3, bty = 'o')
   }
 
 
