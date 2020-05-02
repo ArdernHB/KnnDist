@@ -187,7 +187,7 @@ KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, Sa
 #' @param PrintProg Only used when resampling to equal sample size is used (i.e. \code{Equal = TRUE}) and shows what iteration the function is on. Set to FALSE to ignore.
 #' @param PlotResults logical when set to TRUE the results are plotted. When \code{Equal = TRUE} a polygon is plotted marking the 5th and 9th percentile.
 #' @inheritParams KnnDistCV
-#' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classificaiton.
+#' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification for both weighted and unweighted approaches.
 #' @details When the \code{PrintProg} is set to TRUE, the \code{\link[svMisc]{progress}} function of the \code{svMisc} package is used.
 #'
 #' @section Citations:
@@ -203,10 +203,12 @@ KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, Sa
 #' @export
 
 
-KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualIter=100, SampleSize=NA, TieBreaker=c('Random', 'Remove', 'Report'), Weighted=FALSE, Verbose=FALSE, IgnorePrompts=FALSE, PrintProg=TRUE, PlotResults=TRUE){
+KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualIter=100, SampleSize=NA, TieBreaker=c('Random', 'Remove', 'Report'), Verbose=FALSE, PrintProg=TRUE, PlotResults=TRUE){
   #DistMat = RatDistMat; GroupMembership = Grps; Kmax = 20; Equal = FALSE; Weighted = TRUE; Verbose = TRUE; TieBreaker = 'Remove'; PlotResults = TRUE
+  #DistMat = VoleDistMat; GroupMembership = Grps; Kmax = 20; Equal = FALSE; Weighted = TRUE; Verbose = TRUE; TieBreaker = 'Remove'; PlotResults = TRUE
 
-  MinSamp <- min(table(GroupMembership))
+
+  MinSamp <- min(table(as.character(GroupMembership)))
 
   if (Kmax>MinSamp){
     warning('Kmax is set to higher than the smallest sample size.')
@@ -239,15 +241,15 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
       #Removing the first row bbecause this will represent the distance 0 i.e. the distance from the column specimen to itself
 
       KArray <- array(data = NA, dim = c(dim(SortedDistMat[-1,]), 2))
-      KArray[,,1] <- SortedDistMat[-1,]
-      KArray[,,2] <- AdjSortedDistMat[-1,]
+      KArray[,,1] <- as.matrix(SortedDistMat[-1,])
+      KArray[,,2] <- as.matrix(AdjSortedDistMat[-1,])
 
       dimnames(KArray) <- list(dimnames(AdjSortedDistMat[-1,])[[1]], dimnames(AdjSortedDistMat[-1,])[[2]], c('Call', 'Weight'))
 
 
       for (K in 1:Kmax){
         #K=1
-        WeightedRes <- apply(X = KArray, MARGIN = 2, FUN = KVote, K=K, Weighting=Weighted, TieBreaker=TieBreaker)
+        WeightedRes <- apply(X = KArray, MARGIN = 2, FUN = KVote, K=K, Weighting=TRUE, TieBreaker=TieBreaker)
         UnweightedRes <- apply(X = KArray[,,1], MARGIN = 2, FUN = KVote, K=K, Weighting=FALSE, TieBreaker=TieBreaker)
 
         WeightedCCVPercent <- sum(BalancingGrps$Newfactors==WeightedRes)/length(BalancingGrps$Newfactors)
@@ -312,8 +314,8 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
 
     #Removing the first row bbecause this will represent the distance 0 i.e. the distance from the column specimen to itself
     KArray <- array(data = NA, dim = c(dim(SortedDistMat[-1,]), 2))
-    KArray[,,1] <- SortedDistMat[-1,]
-    KArray[,,2] <- AdjSortedDistMat[-1,]
+    KArray[,,1] <- as.matrix(SortedDistMat[-1,])
+    KArray[,,2] <- as.matrix(AdjSortedDistMat[-1,])
 
     dimnames(KArray) <- list(dimnames(AdjSortedDistMat[-1,])[[1]], dimnames(AdjSortedDistMat[-1,])[[2]], c('Call', 'Weight'))
 
@@ -321,7 +323,7 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
     for (K in 1:Kmax){
       #K=1
 
-      WeightedRes <- apply(X = KArray, MARGIN = 2, FUN = KVote, K=K, Weighting=Weighted, TieBreaker=TieBreaker)
+      WeightedRes <- apply(X = KArray, MARGIN = 2, FUN = KVote, K=K, Weighting=TRUE, TieBreaker=TieBreaker)
       UnweightedRes <- apply(X = KArray[,,1], MARGIN = 2, FUN = KVote, K=K, Weighting=FALSE, TieBreaker=TieBreaker)
 
       WeightedCCVPercent <- sum(GroupMembership==WeightedRes)/length(GroupMembership)

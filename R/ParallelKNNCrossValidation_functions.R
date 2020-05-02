@@ -200,7 +200,7 @@ KnnDistCVStepwisePar <- function(DistMat, GroupMembership, Kmax, EqualIter=100, 
   #PrintProg=TRUE
   #Verbose=TRUE; Equal=TRUE
 
-  MinSamp <- min(table(GroupMembership))
+  MinSamp <- min(table(as.character(GroupMembership)))
 
   if (Kmax>MinSamp){
     warning('Kmax is set to higher than the smallest sample size.')
@@ -303,8 +303,8 @@ KnnDistCVStepwisePar <- function(DistMat, GroupMembership, Kmax, EqualIter=100, 
 
     #Removing the first row bbecause this will represent the distance 0 i.e. the distance from the column specimen to itself
     KArray <- array(data = NA, dim = c(dim(SortedDistMat[-1,]), 2))
-    KArray[,,1] <- SortedDistMat[-1,]
-    KArray[,,2] <- AdjSortedDistMat[-1,]
+    KArray[,,1] <- as.matrix(SortedDistMat[-1,])
+    KArray[,,2] <- as.matrix(AdjSortedDistMat[-1,])
 
     dimnames(KArray) <- list(dimnames(AdjSortedDistMat[-1,])[[1]], dimnames(AdjSortedDistMat[-1,])[[2]], c('Call', 'Weight'))
 
