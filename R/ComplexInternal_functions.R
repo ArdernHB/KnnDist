@@ -98,7 +98,7 @@ KVote <- function(X, K, Weighting=FALSE, TieBreaker=c('Random', 'Remove', 'Repor
     if (dim(VotingData)[2]<2){
       stop('Error: VotingData must be a matrix of 2 columns: the first column must be the nearest neighbour classifications, the second column must be the weighting values')
     }
-    WeightingScores <- stats::aggregate(x = 1/chr2nu(VotingData[,2]), by = list(as.factor(VotingData[,1])), FUN = sum)
+    WeightingScores <- stats::aggregate(x = 1/chr2nu(VotingData[1:K,2]), by = list(as.factor(VotingData[1:K,1])), FUN = sum)
     MajorityVote <- as.character(WeightingScores$Group.1[which(WeightingScores$x==max(WeightingScores$x))])
   }
 
