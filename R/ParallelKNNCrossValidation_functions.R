@@ -194,6 +194,7 @@ KnnDistCVPar <- function(DistMat, GroupMembership, K, EqualIter=100, SampleSize=
 
 KnnDistCVStepwisePar <- function(DistMat, GroupMembership, Kmax, EqualIter=100, SampleSize=NA, TieBreaker=c('Random', 'Remove', 'Report'), PlotResults=TRUE){
 
+  #DistMat = VoleDistMat; GroupMembership = VoleGrps; Kmax = 10; TieBreaker = 'Remove'; PlotResults = TRUE; EqualIter = 100
   #Kmax=20
   #DistMat=ProcDTableRes; GroupMembership=Groups; K=10; Equal=TRUE; EqualIter=100
   #Weighted=TRUE; TieBreaker='Report'
@@ -227,7 +228,7 @@ KnnDistCVStepwisePar <- function(DistMat, GroupMembership, Kmax, EqualIter=100, 
     #Data=PairwiseShapeDistMat; GroupMembership=chr(Groups[GrpPos])
 
     if (is.na(GroupSize)){
-      minSampSize <- min(table(GroupMembership))
+      minSampSize <- min(table(as.character(GroupMembership)))
     } else {
       minSampSize <- GroupSize
     }
@@ -283,7 +284,7 @@ KnnDistCVStepwisePar <- function(DistMat, GroupMembership, Kmax, EqualIter=100, 
   }
 
   ParEqualIterStepwise <- function(DistData, GrpMem, ParKmax=Kmax, ParTieBreaker=TieBreaker, ParSampleSize=SampleSize){
-    #DistData=DistMat; GrpMem=GroupMembership; ParKmax=K; ParTieBreaker='Report'; ParVerbose=FALSE; ParSampleSize=NA
+    #DistData=DistMat; GrpMem=GroupMembership; ParKmax=Kmax; ParTieBreaker='Report'; ParVerbose=FALSE; ParSampleSize=NA
 
     BalancingGrps <- BalancedGrps(GrpMem, ParSampleSize)
 
