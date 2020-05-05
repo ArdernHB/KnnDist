@@ -12,9 +12,7 @@ KnnDistCVStepwise(
   EqualIter = 100,
   SampleSize = NA,
   TieBreaker = c("Random", "Remove", "Report"),
-  Weighted = FALSE,
   Verbose = FALSE,
-  IgnorePrompts = FALSE,
   PrintProg = TRUE,
   PlotResults = TRUE
 )
@@ -34,18 +32,14 @@ KnnDistCVStepwise(
 
 \item{TieBreaker}{is the method used to break ties if there is no majority resulting from K. Three methods are available('Random', 'Remove' and 'Report'): Random randomly returns one of tied classifications; Remove returns 'UnIDed' for the classification; Report returns a the multiple classifications as a single character string with tied classifications separated by '_'. NOTE: for correct cross-validation proceedures the results of both Report will be considered an incorrect identification even if one of the multiple reported classifications is correct.}
 
-\item{Weighted}{is a logical TRUE or FALSE determining whether classification will be based on a weighted K. In this method a simple weighting system is used where weights are 1/distance, where distances is the distance of the considered neighbour from the unknown.}
-
 \item{Verbose}{determines whether the cross-validation results for each reference specimen is returned. Note that if this is set to TRUE and Equal is set to TRUE the funtion will return a list with the results of each iteration which will slow the process dramatically and take a lot of local memory.}
-
-\item{IgnorePrompts}{if both Verbose and Equal are set to TRUE, then the funciton will ask if you are sure you wish to continue; setting IgnorePrompts to TRUE will ignore this question.}
 
 \item{PrintProg}{Only used when resampling to equal sample size is used (i.e. \code{Equal = TRUE}) and shows what iteration the function is on. Set to FALSE to ignore.}
 
 \item{PlotResults}{logical when set to TRUE the results are plotted. When \code{Equal = TRUE} a polygon is plotted marking the 5th and 9th percentile.}
 }
 \value{
-Returns a matrix of the leave-one-out classifications for all the specimens along with their known classificaiton.
+Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification for both weighted and unweighted approaches.
 }
 \description{
 This function NEEDS COMPLETION
