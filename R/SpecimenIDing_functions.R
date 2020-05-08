@@ -1,12 +1,18 @@
 
 #' K-Nearest Neighbour single specimen identification
 #'
-#' This function description NEEDS COMPLETION
-#'
+#' This function takes a vector of distances to an unknown specimen that is to be identified and returns
+#' an identification for the specimen. This function applies both a weighted approach and an unweighted
+#' appraoch and returns both results.
 #'
 #' @param X a numeric vector of distances from the unknown specimen to the all the reference specimens.
 #' @inheritParams KnnDistCV
-#' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classificaiton.
+#' @details The function calculates the classification based on a majority vote from k nearest neighbours.
+#' The method also calculates the classification using a weighted approach. In the weighted approach each
+#' of the k nearest neighbours are given a weight calculated as 1/distance. The weights are summed by group
+#' for the k nearest neighbours and the unknown specimen is assigned to the group with the highest summed weight.
+#'
+#' @return Returns a list of two objects, the classification result from a weighted approach and the classification result from an unweighted approach.
 #'
 #'
 #' @author Ardern Hulme-Beaman
@@ -46,9 +52,9 @@ KnnIDingSingleInd <- function(X, K, GroupMembership, TieBreaker = c('Random', 'R
 
 
 
-#' K-Nearest Neighbour multiple specimen identification
+#' k-Nearest Neighbour multiple specimen identification
 #'
-#' This function is for an unbalanced KNN identification design applied to multiple unknown specimens.
+#' This function is for an unbalanced kNN identification design applied to multiple unknown specimens.
 #'
 #' @param UnknownIdentifier the name used in the \code{GroupMembership} argument to denote specimens to be identified. Only one name can be supplied as Unknown; default is set to 'Unknown'.
 #' @inheritParams KnnDistCV
