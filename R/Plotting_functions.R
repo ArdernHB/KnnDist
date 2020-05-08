@@ -5,7 +5,7 @@
 #'
 #' This function NEEDS COMPLETION
 #'
-#'
+#' @param Probs a vector of two values denoting the upper and lower limit of the resampling to be plotted. Values must be between 0 and 1. Default is .05 and .95.
 #' @param StepwiseResultsMat
 #' @return
 #' @details
