@@ -139,7 +139,7 @@ ProcDistanceTablePar <- function(RefShapes, LMDim=2, ShapeArray=TRUE, Method = c
     RefArray <- RefShapes
   }
 
-  if (is.na(RefIDs)){
+  if (length(RefIDs)==1 && is.na(RefIDs)){
     RefIDs <- 1:dim(RefArray)[3]
   } else if (length(RefIDs)<dim(RefArray)[3]){
     stop('Error: RefIDs is not the same length as the number of specimens in RefShapes. Please check your data and make sure the RefIDs correspond with and are in the same order as the specimens in RefShapes')
