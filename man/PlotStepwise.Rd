@@ -6,7 +6,7 @@
 \usage{
 PlotStepwise(
   StepwiseResultsMat,
-  Probs = c(0.05, 0.5, 0.95),
+  Probs = c(0.05, 0.95),
   PlotCol = "darkblue",
   Add = FALSE,
   Xlabel = "K"
