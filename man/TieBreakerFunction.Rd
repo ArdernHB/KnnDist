@@ -12,10 +12,12 @@ TieBreakerFunction(X, TieBreaker)
 \item{TieBreaker}{is the method used to break ties if there is no majority resulting from K. Three methods are available('Random', 'Remove' and 'Report'): Random randomly returns one of tied classifications; Remove returns 'UnIDed' for the classification; Report returns a the multiple classifications as a single character string with tied classifications separated by '_'. NOTE: for correct cross-validation proceedures the results of both Report will be considered an incorrect identification even if one of the multiple reported classifications is correct.}
 }
 \value{
-Returns SOMETHING
+Returns a character string of the identification based on the chosen tiebreaker method.
 }
 \description{
-This function description NEEDS COMPLETION
+This function is primarily for use in other k-NN functions. It takes a vector and applies
+the chosen tiebreaker method. This includes either randomly selecting one of the tied groups,
+returning all groups collapsed into a single character string, or returning 'UnIDed'.
 }
 \author{
 Ardern Hulme-Beaman

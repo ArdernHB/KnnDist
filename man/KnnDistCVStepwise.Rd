@@ -42,18 +42,19 @@ KnnDistCVStepwise(
 Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification for both weighted and unweighted approaches.
 }
 \description{
-This function NEEDS COMPLETION
+This function takes a square matrix of distances among specimens of known group membership
+and returns the results of a leave-one-out correct cross validation identification exercise for
+each incremental increase in k. The results of the analyses can be plotted to visualise the
+change in correct identification given changes in k.
 }
 \details{
+The function also provides functionality to resample unequal groups to equal sample size a set
+number of times.
+
+This function applies both a weighted approach and an unweighted appraoch and returns both results.
+
 When the \code{PrintProg} is set to TRUE, the \code{\link[svMisc]{progress}} function of the \code{svMisc} package is used.
 }
-\section{Citations}{
-
-
-Ian L. Dryden (2016). shapes: Statistical Shape Analysis. R package version 1.1-13.
-https://CRAN.R-project.org/package=shapes
-}
-
 \author{
 Ardern Hulme-Beaman
 }

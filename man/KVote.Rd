@@ -16,10 +16,10 @@ KVote(X, K, Weighting = FALSE, TieBreaker = c("Random", "Remove", "Report"))
 \item{TieBreaker}{is the method used to break ties if there is no majority resulting from K. Three methods are available('Random', 'Remove' and 'Report'): Random randomly returns one of tied classifications; Remove returns 'UnIDed' for the classification; Report returns a the multiple classifications as a single character string with tied classifications separated by '_'. NOTE: for correct cross-validation proceedures the results of both Report will be considered an incorrect identification even if one of the multiple reported classifications is correct.}
 }
 \value{
-Returns SOMETHING
+Returns the classification of the unknown individual to be identified.
 }
 \description{
-This function description NEEDS COMPLETION
+This function carried out k-NN analyses on the provided data.
 }
 \author{
 Ardern Hulme-Beaman

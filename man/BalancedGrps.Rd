@@ -12,10 +12,15 @@ BalancedGrps(GroupMembership, GroupSize = NA)
 \item{GroupSize}{the sample size you wish the function to resample the data to. If NA supplied then the smallest sample size of the groups supplied will be used.}
 }
 \value{
-Returns SOMETHING
+Returns a list of 2 vectors. The first vector is the indexed location of the new equally size sample
 }
 \description{
-This function description NEEDS COMPLETION
+This function takes a character of factor vector and returns a new vector of equal sample size
+along with a vector of index positions to sort whatever other data might be associated with the
+factor vector into the new equal sample size order. The user can also provide a user defined minimum
+sample size if the user wishes the resampling procedure to sample to a smaller number of specimens
+than the smallest sample size. In this way the function can also be used in a leave-p-out cross-
+validation exercise.
 }
 \author{
 Ardern Hulme-Beaman

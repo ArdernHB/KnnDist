@@ -2,7 +2,7 @@
 % Please edit documentation in R/SpecimenIDing_functions.R
 \name{KnnDistIDingGroup}
 \alias{KnnDistIDingGroup}
-\title{K-Nearest Neighbour multiple specimen identification}
+\title{k-Nearest Neighbour multiple specimen identification}
 \usage{
 KnnDistIDingGroup(
   DistMat,
@@ -27,7 +27,7 @@ KnnDistIDingGroup(
 Returns a matrix of the leave-one-out classifications for all the specimens along with their known classificaiton.
 }
 \description{
-This function is for an unbalanced KNN identification design applied to multiple unknown specimens.
+This function is for an unbalanced kNN identification design applied to multiple unknown specimens.
 }
 \author{
 Ardern Hulme-Beaman

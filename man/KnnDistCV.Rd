@@ -42,15 +42,16 @@ KnnDistCV(
 Returns a matrix of the leave-one-out classifications for all the specimens along with their known classificaiton.
 }
 \description{
-This function NEEDS COMPLETION
+This function takes a square matrix of distances among specimens of known group membership
+and returns the results of a leave-one-out correct cross validation identification for each
+specimen to provide a correct cross-validation percentage.
 }
-\section{Citations}{
+\details{
+The function also provides functionality to resample unequal groups to equal sample size a set
+number of times.
 
-
-Ian L. Dryden (2016). shapes: Statistical Shape Analysis. R package version 1.1-13.
-https://CRAN.R-project.org/package=shapes
+This function applies both a weighted approach and an unweighted appraoch and returns both results.
 }
-
 \author{
 Ardern Hulme-Beaman
 }

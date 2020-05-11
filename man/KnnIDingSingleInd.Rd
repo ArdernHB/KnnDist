@@ -24,15 +24,15 @@ KnnIDingSingleInd(
 Returns a list of two objects, the classification result from a weighted approach and the classification result from an unweighted approach.
 }
 \description{
-This function takes a vector distances to an unknown specimen that is to be identified and returns
+This function takes a vector of distances to an unknown specimen that is to be identified and returns
 an identification for the specimen. This function applies both a weighted approach and an unweighted
 appraoch and returns both results.
 }
 \details{
-The function calculates the classification based on a majority vote from K nearest neighbours.
+The function calculates the classification based on a majority vote from k nearest neighbours.
 The method also calculates the classification using a weighted approach. In the weighted approach each
-of the K nearest neighbours are given a weight calculated as 1/distance. The weights are summed by group
-for the K nearest neighbours and the unknown specimen is assigned to the group with the highest summed weight.
+of the k nearest neighbours are given a weight calculated as 1/distance. The weights are summed by group
+for the k nearest neighbours and the unknown specimen is assigned to the group with the highest summed weight.
 }
 \author{
 Ardern Hulme-Beaman
