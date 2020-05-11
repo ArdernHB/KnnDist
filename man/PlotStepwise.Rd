@@ -6,19 +6,22 @@
 \usage{
 PlotStepwise(
   StepwiseResultsMat,
-  Probs = c(0.05, 0.95),
+  Percentiles = c(0.05, 0.95),
   PlotCol = "darkblue",
   Add = FALSE,
   Xlabel = "K"
 )
 }
 \arguments{
-\item{StepwiseResultsMat}{a}
+\item{StepwiseResultsMat}{a matrix where the rows are the cross-validation % result for each iteration of resampling to equal sample size and the columns are the stepwise increase in k.}
 
-\item{Probs}{a vector of two values denoting the upper and lower limit of the resampling to be plotted. Values must be between 0 and 1. Default is .05 and .95.}
-}
-\value{
+\item{Percentiles}{a vector of two values denoting the upper and lower limit of the resampling to be plotted. Values must be between 0 and 1. Default is .05 and .95.}
 
+\item{PlotCol}{is the colour of the line and the polygon representing the range of cross-validation % at the user defined percentiles.}
+
+\item{Add}{is a logical value to determine if the the plot should be added to a previous plot. For example if the \code{StepwiseResultsMat} is the weighted result and if the user would like to plot the results of an unweighted analysis on the same plot for comparison.}
+
+\item{Xlabel}{is the label to be used on the x axis. Default is 'K'; however, this function can be used for stepwise analysis of PCA and so the user may wish to change the x label.}
 }
 \description{
 This function plots the results of a stepwise analyses with resampling to equal sample size.

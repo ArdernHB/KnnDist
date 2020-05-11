@@ -8,16 +8,16 @@
 #' and will also plot the range around the mean (default upper and lower limit is set to the 5th
 #' and 95th percentiles).
 #'
-#' @param StepwiseResultsMat a
-#' @param Probs a vector of two values denoting the upper and lower limit of the resampling to be plotted. Values must be between 0 and 1. Default is .05 and .95.
-#' @param StepwiseResultsMat
-#' @return
-#' @details
+#' @param Percentiles a vector of two values denoting the upper and lower limit of the resampling to be plotted. Values must be between 0 and 1. Default is .05 and .95.
+#' @param StepwiseResultsMat a matrix where the rows are the cross-validation % result for each iteration of resampling to equal sample size and the columns are the stepwise increase in k.
+#' @param PlotCol is the colour of the line and the polygon representing the range of cross-validation % at the user defined percentiles.
+#' @param Add is a logical value to determine if the the plot should be added to a previous plot. For example if the \code{StepwiseResultsMat} is the weighted result and if the user would like to plot the results of an unweighted analysis on the same plot for comparison.
+#' @param Xlabel is the label to be used on the x axis. Default is 'K'; however, this function can be used for stepwise analysis of PCA and so the user may wish to change the x label.
 #' @author Ardern Hulme-Beaman
 #'
 #' @export
 
-PlotStepwise <- function(StepwiseResultsMat, Probs=c(.05, .95), PlotCol='darkblue', Add=FALSE, Xlabel='K'){
+PlotStepwise <- function(StepwiseResultsMat, Percentiles=c(.05, .95), PlotCol='darkblue', Add=FALSE, Xlabel='K'){
 
   #StepwiseResultsMat = VoleStepLDA; PlotCol = 'darkblue'; Add = FALSE
 
