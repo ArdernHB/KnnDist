@@ -1,13 +1,26 @@
 
 
+
 #' K-Nearest Neighbour correct cross-validation with distance input using parallel processing
 #'
-#' This function description NEEDS COMPLETION
+#' This function takes a square matrix of distances among specimens of known group membership
+#' and returns the results of a leave-one-out correct cross validation identification for each
+#' specimen to provide a correct cross-validation percentage.
 #'
+#' The function is primarily for use with resampling unequal groups to equal sample size a set
+#' number of times. This process is carried out with parrallel processing.
+#'
+#' This function applies both a weighted approach and an unweighted approach and returns both results.
+#'
+#' Note that this function is faster when datasets are large and/or when greater numbers of resampling
+#' iterations are used. For small samples and few resampling iterations the function is unlikely to be
+#' much faster, this is because in addition to the time it takes to carry out calculations the parallel
+#' processing will need to compile the results at the end. This process adds additional time to the
+#' process.
 #'
 #'
 #' @inheritParams KnnDistCV
-#' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classificaiton.
+#' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification.
 #'
 #'
 #' @author Ardern Hulme-Beaman
@@ -171,17 +184,26 @@ KnnDistCVPar <- function(DistMat, GroupMembership, K, EqualIter=100, SampleSize=
 
 #' Stepwise K-Nearest Neighbour correct cross-validation with distance input using parallel processing
 #'
-#' This function NEEDS COMPLETION
+#' This function takes a square matrix of distances among specimens of known group membership
+#' and returns the results of a leave-one-out correct cross validation identification exercise for
+#' each incremental increase in k. The results of the analyses can be plotted to visualise the
+#' change in correct identification given changes in k.
+#'
+#' The function is primarily for use with resampling unequal groups to equal sample size a set
+#' number of times. This process is carried out with parrallel processing.
+#'
+#' This function applies both a weighted approach and an unweighted appraoch and returns both results.
+#'
+#' Note that this function is faster when datasets are large and/or when greater numbers of resampling
+#' iterations are used. For small samples and few resampling iterations the function is unlikely to be
+#' much faster, this is because in addition to the time it takes to carry out calculations the parallel
+#' processing will need to compile the results at the end. This process adds additional time to the
+#' process.
 #'
 #'
 #' @inheritParams KnnDistCVStepwise
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classificaiton.
 #' @details When the \code{PrintProg} is set to TRUE, the \code{\link[svMisc]{progress}} function of the \code{svMisc} package is used.
-#'
-#' @section Citations:
-#'
-#' Ian L. Dryden (2016). shapes: Statistical Shape Analysis. R package version 1.1-13.
-#' https://CRAN.R-project.org/package=shapes
 #'
 #'
 #' @keywords shape distances

@@ -3,8 +3,12 @@
 
 #' Plotting function for stepwise results
 #'
-#' This function NEEDS COMPLETION
+#' This function plots the results of a stepwise analyses with resampling to equal sample size.
+#' The function will plot the line connecting the means of each stepwise incriment increase of K
+#' and will also plot the range around the mean (default upper and lower limit is set to the 5th
+#' and 95th percentiles).
 #'
+#' @param StepwiseResultsMat a
 #' @param Probs a vector of two values denoting the upper and lower limit of the resampling to be plotted. Values must be between 0 and 1. Default is .05 and .95.
 #' @param StepwiseResultsMat
 #' @return

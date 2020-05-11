@@ -4,12 +4,17 @@
 
 #' Function for resampling groups to equal sample size
 #'
-#' This function description NEEDS COMPLETION
+#' This function takes a character of factor vector and returns a new vector of equal sample size
+#' along with a vector of index positions to sort whatever other data might be associated with the
+#' factor vector into the new equal sample size order. The user can also provide a user defined minimum
+#' sample size if the user wishes the resampling procedure to sample to a smaller number of specimens
+#' than the smallest sample size. In this way the function can also be used in a leave-p-out cross-
+#' validation exercise.
 #'
 #'
 #' @inheritParams KnnDistCV
 #' @param GroupSize the sample size you wish the function to resample the data to. If NA supplied then the smallest sample size of the groups supplied will be used.
-#' @return Returns SOMETHING
+#' @return Returns a list of 2 vectors. The first vector is the indexed location of the new equally size sample
 #'
 #'
 #' @author Ardern Hulme-Beaman
@@ -20,7 +25,7 @@ BalancedGrps <- function(GroupMembership, GroupSize=NA){
   #Data=PairwiseShapeDistMat; GroupMembership=chr(Groups[GrpPos])
 
   if (is.na(GroupSize)){
-    minSampSize <- min(table(GroupMembership))
+    minSampSize <- min(table(as.character(GroupMembership)))
   } else {
     minSampSize <- GroupSize
   }
@@ -37,12 +42,13 @@ BalancedGrps <- function(GroupMembership, GroupSize=NA){
 
 #' Function for breaking tied votes
 #'
-#' This function description NEEDS COMPLETION
-#'
+#' This function is primarily for use in other k-NN functions. It takes a vector and applies
+#' the chosen tiebreaker method. This includes either randomly selecting one of the tied groups,
+#' returning all groups collapsed into a single character string, or returning 'UnIDed'.
 #'
 #' @param X a vector of the tied classifications to be considered.
 #' @inheritParams KnnDistCV
-#' @return Returns SOMETHING
+#' @return Returns a character string of the identification based on the chosen tiebreaker method.
 #'
 #'
 #' @author Ardern Hulme-Beaman
@@ -67,12 +73,12 @@ TieBreakerFunction <- function(X, TieBreaker){
 
 #' Function for calculating the majority vote
 #'
-#' This function description NEEDS COMPLETION
+#' This function carried out k-NN analyses on the provided data.
 #'
 #' @param X a vector or matrix of the nearest neighbours. If \code{Weighting=TRUE} then a matrix is expected with the first column being the membership names of nearest neighbours and the second column should be the distances to each neighbour; if \code{Weighting=FALSE} then the just a vector of the membership names of nearest neighbours is required.
 #' @inheritParams KnnDistCV
 #' @param Weighting is a logical TRUE or FALSE determining whether classification will be based on a weighted K. In this method a simple weighting system is used where weights are 1/distance, where distances is the distance of the considered neighbour from the unknown.
-#' @return Returns SOMETHING
+#' @return Returns the classification of the unknown individual to be identified.
 #'
 #'
 #' @author Ardern Hulme-Beaman

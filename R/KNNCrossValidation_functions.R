@@ -1,7 +1,14 @@
 
 #' K-Nearest Neighbour correct cross-validation with distance input
 #'
-#' This function NEEDS COMPLETION
+#' This function takes a square matrix of distances among specimens of known group membership
+#' and returns the results of a leave-one-out correct cross validation identification for each
+#' specimen to provide a correct cross-validation percentage.
+#'
+#' The function also provides functionality to resample unequal groups to equal sample size a set
+#' number of times.
+#'
+#' This function applies both a weighted approach and an unweighted appraoch and returns both results.
 #'
 #'
 #'
@@ -16,10 +23,6 @@
 #' @param Verbose determines whether the cross-validation results for each reference specimen is returned. Note that if this is set to TRUE and Equal is set to TRUE the funtion will return a list with the results of each iteration which will slow the process dramatically and take a lot of local memory.
 #' @param IgnorePrompts if both Verbose and Equal are set to TRUE, then the funciton will ask if you are sure you wish to continue; setting IgnorePrompts to TRUE will ignore this question.
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classificaiton.
-#' @section Citations:
-#'
-#' Ian L. Dryden (2016). shapes: Statistical Shape Analysis. R package version 1.1-13.
-#' https://CRAN.R-project.org/package=shapes
 #'
 #'
 #' @keywords shape distances
@@ -180,7 +183,16 @@ KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, Sa
 
 #' Stepwise K-Nearest Neighbour correct cross-validation with distance input
 #'
-#' This function NEEDS COMPLETION
+#' This function takes a square matrix of distances among specimens of known group membership
+#' and returns the results of a leave-one-out correct cross validation identification exercise for
+#' each incremental increase in k. The results of the analyses can be plotted to visualise the
+#' change in correct identification given changes in k.
+#'
+#' The function also provides functionality to resample unequal groups to equal sample size a set
+#' number of times.
+#'
+#' This function applies both a weighted approach and an unweighted appraoch and returns both results.
+#'
 #'
 #'
 #' @param Kmax This sets the maximum K that K will increase to stepwise.
@@ -189,12 +201,6 @@ KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, Sa
 #' @inheritParams KnnDistCV
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classification for both weighted and unweighted approaches.
 #' @details When the \code{PrintProg} is set to TRUE, the \code{\link[svMisc]{progress}} function of the \code{svMisc} package is used.
-#'
-#' @section Citations:
-#'
-#' Ian L. Dryden (2016). shapes: Statistical Shape Analysis. R package version 1.1-13.
-#' https://CRAN.R-project.org/package=shapes
-#'
 #'
 #' @keywords shape distances
 #' @keywords Geometric morphometric distances
