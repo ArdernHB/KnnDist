@@ -30,7 +30,7 @@ PlotStepwise <- function(StepwiseResultsMat, Percentiles=c(.05, .95), PlotCol='d
   }
 
 
-  ResRange <- apply(StepwiseResultsMat, MARGIN = 2, FUN = stats::quantile, probs = Probs, na.rm=TRUE)
+  ResRange <- apply(StepwiseResultsMat, MARGIN = 2, FUN = stats::quantile, probs = Percentiles, na.rm=TRUE)
   graphics::polygon(x = c(1:DataDim, DataDim:1),
                     y = c(ResRange[1,], ResRange[2,DataDim:1])*100,
                     col = transpar(PlotCol, alpha = 75),
