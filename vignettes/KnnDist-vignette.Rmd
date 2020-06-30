@@ -19,10 +19,10 @@ library(KnnDist)
 ```
 
 
-KnnDist: Classification methods by k-nearest neighbour with distance input
+KnnDist: Classification methods by *k*-nearest neighbour with distance input
 --------------------------------------------------------------------------------------------------
 
-This vignette walks the reader through the KnnDist package using a published morphological dataset of rat lower first molars. The goal of this vignette is to provide the user with the code and tools to use this packages main functionality. The main goal of the k-nearest neighbour (k-NN) method is to accurately and efficiently classify specimens of unknown group membership to user defined groups. This classification method uses a set number of nearest neighbours (called k) to assign group classification; for example, if there are two groups and k is set to 10 then the 10 nearest neighbours to the unknown specimen will be examined and the unknown specimen will be classified to whichever group makes up >5 of the nearest neighbours. The tools presented here allow are both for classification based on user input distances but also for approaches to optimise k (namely stepwise increase approaches).
+This vignette walks the reader through the KnnDist package using a published morphological dataset of rat lower first molars. The goal of this vignette is to provide the user with the code and tools to use this packages main functionality. The main goal of the *k*-nearest neighbour (k-NN) method is to accurately and efficiently classify specimens of unknown group membership to user defined groups. This classification method uses a set number of nearest neighbours (called k) to assign group classification; for example, if there are two groups and *k* is set to 10 then the 10 nearest neighbours to the unknown specimen will be examined and the unknown specimen will be classified to whichever group makes up >5 of the nearest neighbours. The tools presented here allow are both for classification based on user input distances but also for approaches to optimise *k* (namely stepwise increase approaches).
 
 Rattini tribe species discrimination using dental morphology: dataset and distance calculations
 -------------------------------------------------------------------------------------------------------
@@ -39,20 +39,19 @@ The sample sizes are unequal with the smallest being *Rattus nitidus*
 names(which(table(RatData$Info$Species)==min(table(RatData$Info$Species))))
 ```
 
-For this dataset we will work with the raw shape data. Procrustes distances must first be calculated among the specimens use in the `ProcDistanceTable` function, which is a wrapper of the `procdist` function from the `shapes` package that outputs a square distance materix. This function is slow as it needs to calculate the pairwise Procrustes superimpositions among each pair of specimen. Use the function \code{ProcDistanceTablePar} for large datasets to make use of parallel processing. Note this will only be faster for large datasets as with small ones the time taken to recompile the results of each parallel process can create a bottleneck. For example, using an Intel(R) Core(TM) i7-8565U CPU with 4 cores and 8 threads to process this full dataset the single core processing takes ~2.36mins whereas parallel processing takes ~1.17mins; with this processor parallel processing becomes more efficient than single thread processing around 60 specimens.
+For this dataset we will work with the raw shape data. The Procrustes distances can be calculated using the ProcDistanceTable function or the ProcDistanceTablePar function. This distance table takes some time to comute so is provided in the package data. The `ProcDistanceTable` function is a wrapper of the `procdist` function from the `shapes` package that outputs a square distance materix. This function is slow as it needs to calculate the pairwise Procrustes superimpositions among each pair of specimen. Use the function ProcDistanceTablePar for large datasets to make use of parallel processing. Note this will only be faster for large datasets as with small ones the time taken to recompile the results of each parallel process can create a bottleneck. For example, using an Intel(R) Core(TM) i7-8565U CPU with 4 cores and 8 threads to process this full dataset the single core processing takes ~2.36mins whereas parallel processing takes ~1.17mins; with this processor parallel processing becomes more efficient than single thread processing around 60 specimens.
 
 Parallel processing is not demonstrated in this vignette as it can complicate automatic vignette and package checks; parallel versions of functions can be typically be accessed using the same function name with 'Par' at the end.
 
 ``` {r Calculating procrustes distance matrix among specimens}
-RatDistMat <- ProcDistanceTable(RatData$LMs, 
-                                Method = 'full', 
-                                RefIDs = dimnames(RatData$LMs)[[3]])
+RatDistMat <- RatData$FullProcrustesDistMat
+str(RatData$FullProcrustesDistMat)
 ```
 
 k-NN by simple majority
 -------------------------------------------------------------------------------------------------------
 
-In the first instance we can take an single individual and treat it as an unknown to assess the approach of the k-NN classification analysis. The function KnnIDingSingleInd will return the results of both a simple count of the majority vote and also the results of a weighted majority vote (see below for details). In the first instance we will examine the simple majority vote process and results.
+In the first instance we can take an single individual and treat it as an unknown to assess the approach of the *k*-NN classification analysis. The function KnnIDingSingleInd will return the results of both a simple count of the majority vote and also the results of a weighted majority vote (see below for details). In the first instance we will examine the simple majority vote process and results.
 
 ``` {r Classification by nearest 10 neighbours}
 KnnIDingSingleInd(X = RatDistMat[1,-1],
@@ -119,12 +118,14 @@ WeightedScores[sort(WeightedScores[,2],
 
 ```
 
-As demonstrated above the k-NN process is relatively simple to implement. The KnnDist package carries out the above operations in a simple manor. However, assessing the accuracy of *k* and then efficiently optimising *k* when sample sizes are also unbalanced is a little less straight forward. Here the KnnDist package provides a couple of options.
+As demonstrated above the *k*-NN process is relatively simple to implement. The KnnDist package carries out the above operations in a simple manor. However, assessing the accuracy of *k* and then efficiently optimising *k* when sample sizes are also unbalanced is a little less straight forward. Here the KnnDist package provides a couple of options.
 
-Optimising k with unbalanced sample sizes
+Assessing accuracy of *k*-NN and unequal sample size
 -------------------------------------------------------------------------------------------------------
 
-The first step is to assess the accuracy of the k-NN procedure on a given training dataset. This can be achieved with a leave-one-out correct-cross-validation analyses. We will start with *k* set to 10 as described above. We will set the TieBreaker argument to 'Remove'; this means that if their is no majority vote and the specimen will be removed and considered unidentified. The function will return both the results of a weighted and an unweighted k-NN analysis. Note that we set the IgnorePrompts argument to TRUE in the vignette, the default is FALSE and is primarily for when resampling to equal sample size and Verbose outputs are desired, which can lead to an extremely slow process. If both equal sample size and verbose is required then the KnnDistCVPar function which implements parallel processing is likely to be much faster.
+Those previous demonstration identifications are of no value if they are not in the context of how well the method performs overall. Therefore the next steap is to assess the accuracy of the *k*-NN procedure on a given training dataset. This can be achieved with a leave-one-out correct-cross-validation analyses. This is where an individual is treated as an unknown and then is identified based on the rest of the dataset; this is carried out repeatedly to cycle through all individuals in the dataset and the percentage of times it is correct is calculated and considered the percentage correct cross-validation.
+
+We will start with *k* set to 10 as described above. We will set the TieBreaker argument to 'Remove'; this means that if their is no majority vote and the specimen will be removed and considered unidentified. The function will return both the results of a weighted and an unweighted *k*-NN analysis. Note that we set the IgnorePrompts argument to TRUE in the vignette, the default is FALSE and is primarily for when resampling to equal sample size and Verbose outputs are desired, which can lead to an extremely slow process. If both equal sample size and verbose is required then the KnnDistCVPar function which implements parallel processing is likely to be much faster.
 
 
 ``` {r Simple correct cross validation}
@@ -136,16 +137,60 @@ KnnDistCV(DistMat = RatDistMat,
           IgnorePrompts = TRUE)
 ```
 
-This dataset includes groups of unequal sample size, to therefore will require additional special treatment. Therefore, we can iteratively resample to equal sample size; this can be achieved by setting the Equal argument to TRUE and adding the EqualIter argument to the number of times this will be resampled to equal sample size. Note that this process can be slow when a high EqualIter number is set, this process can be greatly sped up using the parallel version of this function KnnDistCVPar, which accepts the same arguments as the KnnDistCV function.
+This dataset includes groups of unequal sample size and will require additional treatment to assess how the accuracy of the *k*-NN process when applied to new unknown individuals. This is because with unequal sample size the method is more likely to correctly identify the larger sample size just by chance; for example if one group has 95 individuals and the other group has 5 then if all samples were identified to the larger group then 95% of the identifications would be correct and would misleadingly suggest that the correct cross validation was 95%.
+
+To get a better idea of how well the method will work with an unknown individual we can iteratively resample to equal sample size; this can be achieved by setting the Equal argument to TRUE and adding the EqualIter argument to the number of times this will be resampled to equal sample size. Note that this process can be slow when a high EqualIter number is set, this process can be greatly sped up using the parallel version of this function KnnDistCVPar, which accepts the same arguments as the KnnDistCV function.
 
 ``` {r Correct cross validation with resampling to equal sample size}
-KnnDistCV(DistMat = RatDistMat, 
-          GroupMembership = RatData$Info$Species, 
-          K = 10, 
-          Equal = TRUE, 
-          EqualIter = 100,
-          TieBreaker = 'Remove',
-          IgnorePrompts = TRUE)
+EqualRatCVP <- KnnDistCV(DistMat = RatDistMat, 
+                         GroupMembership = RatData$Info$Species, 
+                         K = 10, 
+                         Equal = TRUE, 
+                         EqualIter = 10,
+                         TieBreaker = 'Remove',
+                         IgnorePrompts = TRUE)
+
+apply(EqualRatCVP, MARGIN = 2, FUN = mean)
+
 ```
 
+The KnnDistDV function outputs the results of each iteration of the resampling exercise, so the user needs to then calculate the mean value (and set percentiles if they are of interest) from these to summarise the results and get a better indication of classification accuracy.
+
+
+Optimising *k* and unequal sample size
+-------------------------------------------------------------------------------------------------------
+
+We have kept *k* set to 10 so far, but with a change in *k* the results might (and usually do!) change. Therefore we need to optimise *k* for classification in any given dataset. KnnDist provides a specific tool for this in the form of KnnDistCVStepwise and KnnDistCVStepwisePar (the parallel processing equivelant).
+
+The simplest way to assess for optimising *k* is to start at *k*=1 and then increase *k* in a stepwise manner to a given number (e.g. maybe the smallest sample size in the dataset) and assess the classification accuracy at each step.
+
+This can be done with the function KnnDistCVStepwise as follows (note in the first instance this will be done with Equal set to FALSE so the results will be with unequal sample size as demonstration, but the default is to resample to equal sample size 100 times):
+
+``` {r *k* optimisation with stepwise correct cross validation}
+UnequalKOpt <- KnnDistCVStepwise(DistMat = RatDistMat,
+                                 GroupMembership = RatData$Info$Species,
+                                 Kmax = 10,
+                                 Equal = FALSE,
+                                 PrintProg = FALSE,
+                                 PlotResults = TRUE,
+                                 TieBreaker = 'Remove')
+
+```
+
+Again, using unequal sample size might bias the results and present an inaccurate indication of the confidence with which this method can classify specimens. Therefore, resampling to equal sample size is also advised for the *k* optimisation. This can be achieved by setting the Equal argument to TRUE. The result will then plot the mean correct cross-validation percentages with a range around it at the 5th and 95th percentiles.
+
+Note that resampling to equal sample size combined with stepwise *k* optimisation is an extremely slow process and it is therefore advised the KnnDistCVStepwisePar is used. Here KnnDistCVStepwise is used because of the limitations of providing a vignette with parallel processing functions. As a result, the EqualIter argument has been set to be low at 10, in practice it is advisable to resample to equal sample many more than 10 times and the default is 100.
+
+
+``` {r *k* optimisation with stepwise correct cross validation with resampling to equal sample size}
+EqualKOpt <- KnnDistCVStepwise(DistMat = RatDistMat,
+                               GroupMembership = RatData$Info$Species,
+                               Kmax = 10,
+                               Equal = TRUE,
+                               EqualIter = 10,
+                               PrintProg = FALSE,
+                               PlotResults = TRUE,
+                               TieBreaker = 'Remove')
+
+```
 
