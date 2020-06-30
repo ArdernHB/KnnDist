@@ -264,7 +264,7 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
 
 
 
-      graphics::plot(y = colMeans(ResultsTable$Unweighted.Results), x = 1:Kmax, type = 'n', ylim = c(10,105), ylab = 'CCV %', xlab = 'K')
+      graphics::plot(y = colMeans(ResultsTable$Unweighted.Results), x = 1:Kmax, type = 'n', ylim = c(10,105), ylab = 'CCV percentage', xlab = 'K')
       graphics::abline(h = seq(from = 20, to = 100, by = 10), v = seq(from = 2, to = Kmax, by =2), lty = '1919')
 
       WeightRange <- apply(ResultsTable$Weighted.Results, MARGIN = 2, FUN = stats::quantile, probs = c(.05, .95))
@@ -328,7 +328,7 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
 
     if (PlotResults==TRUE){
 
-      graphics::plot(y = colMeans(ResultsTable$Unweighted.Results), x = 1:Kmax, type = 'n', ylim = c(10,105), ylab = 'CCV %', xlab = 'K')
+      graphics::plot(y = colMeans(ResultsTable$Unweighted.Results), x = 1:Kmax, type = 'n', ylim = c(10,105), ylab = 'CCV percentage', xlab = 'K')
       graphics::abline(h = seq(from = 20, to = 100, by = 10), v = seq(from = 2, to = Kmax, by =2), lty = '1919')
 
 
