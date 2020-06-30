@@ -8,7 +8,7 @@
 #' The function also provides functionality to resample unequal groups to equal sample size a set
 #' number of times.
 #'
-#' This function applies both a weighted approach and an unweighted appraoch and returns both results.
+#' This function applies both a weighted approach and an unweighted approach and returns both results.
 #'
 #'
 #'
@@ -19,7 +19,6 @@
 #' @param EqualIter sets the number of iterations resampling to equal sample size will be carried out.
 #' @param SampleSize is the sample number that groups will be subsampled to if \code{Equal} is set to TRUE. The default is set to NA and will therefore use the smallest sample size of the groups provided.
 #' @param TieBreaker is the method used to break ties if there is no majority resulting from K. Three methods are available('Random', 'Remove' and 'Report'): Random randomly returns one of tied classifications; Remove returns 'UnIDed' for the classification; Report returns a the multiple classifications as a single character string with tied classifications separated by '_'. NOTE: for correct cross-validation proceedures the results of both Report will be considered an incorrect identification even if one of the multiple reported classifications is correct.
-#' @param Weighted is a logical TRUE or FALSE determining whether classification will be based on a weighted K. In this method a simple weighting system is used where weights are 1/distance, where distances is the distance of the considered neighbour from the unknown.
 #' @param Verbose determines whether the cross-validation results for each reference specimen is returned. Note that if this is set to TRUE and Equal is set to TRUE the funtion will return a list with the results of each iteration which will slow the process dramatically and take a lot of local memory.
 #' @param IgnorePrompts if both Verbose and Equal are set to TRUE, then the funciton will ask if you are sure you wish to continue; setting IgnorePrompts to TRUE will ignore this question.
 #' @return Returns a matrix of the leave-one-out classifications for all the specimens along with their known classificaiton.
@@ -31,10 +30,14 @@
 #' @export
 
 
-KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, SampleSize=NA, TieBreaker=c('Random', 'Remove', 'Report'), Weighted=FALSE, Verbose=FALSE, IgnorePrompts=FALSE){
+KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, SampleSize=NA, TieBreaker=c('Random', 'Remove', 'Report'), Verbose=FALSE, IgnorePrompts=FALSE){
   #K=2
   #DistMat=ProcDTableRes; GroupMembership=Groups; K=10; Equal=TRUE; EqualIter=100
-  #Weighted=TRUE; TieBreaker='Report'
+  #Weighted=TRUE; TieBreaker='Report'; Equal=FALSE; EqualIter=100; Verbose=TRUE
+
+  if (dim(DistMat)[1]!=length(GroupMembership)){
+    stop('number of specimens in DistMat does not match the number of specimens listed in GroupMembership')
+  }
 
   #Verbose=TRUE; Equal=TRUE
   if (IgnorePrompts==FALSE){
@@ -87,30 +90,23 @@ KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, Sa
       Kweightmat <- AdjSortedDistMat[-1,]
 
 
-      if (Weighted==TRUE){
-        KArray <- array(data = NA, dim = c(dim(KIDmat), 2))
-        KArray[,,1] <- KIDmat
-        KArray[,,2] <- Kweightmat
+      KArray <- array(data = NA, dim = c(dim(KIDmat), 2))
+      KArray[,,1] <- KIDmat
+      KArray[,,2] <- Kweightmat
 
-        dimnames(KArray) <- list(dimnames(Kweightmat)[[1]], dimnames(Kweightmat)[[2]], c('Call', 'Weight'))
+      dimnames(KArray) <- list(dimnames(Kweightmat)[[1]], dimnames(Kweightmat)[[2]], c('Call', 'Weight'))
 
-        WeightedRes <- apply(X = KArray, MARGIN = 2, FUN = KVote, K=K, Weighting=Weighted, TieBreaker=TieBreaker)
-        UnweightedRes <- apply(X = KArray[,,1], MARGIN = 2, FUN = KVote, K=K, Weighting=FALSE, TieBreaker=TieBreaker)
+      WeightedRes <- apply(X = KArray, MARGIN = 2, FUN = KVote, K=K, Weighting=TRUE, TieBreaker=TieBreaker)
+      UnweightedRes <- apply(X = KArray[,,1], MARGIN = 2, FUN = KVote, K=K, Weighting=FALSE, TieBreaker=TieBreaker)
 
-        ResTable <- cbind(rownames(BalancedDistMat), BalancingGrps$Newfactors, WeightedRes, UnweightedRes)
-        colnames(ResTable) <- c('ID', 'True.Classification', 'Weighted.Classification', 'Unweighted.Classification')
+      ResTable <- cbind(rownames(BalancedDistMat), BalancingGrps$Newfactors, WeightedRes, UnweightedRes)
+      colnames(ResTable) <- c('ID', 'True.Classification', 'Weighted.Classification', 'Unweighted.Classification')
 
-        WeightedCCVPercent <- sum(BalancingGrps$Newfactors==WeightedRes)/length(BalancingGrps$Newfactors)
-        UnweightedCCVPercent <- sum(BalancingGrps$Newfactors==UnweightedRes)/length(BalancingGrps$Newfactors)
+      WeightedCCVPercent <- sum(BalancingGrps$Newfactors==WeightedRes)/length(BalancingGrps$Newfactors)
+      UnweightedCCVPercent <- sum(BalancingGrps$Newfactors==UnweightedRes)/length(BalancingGrps$Newfactors)
 
-        ResultsTable <- rbind(ResultsTable, c(WeightedCCVPercent, UnweightedCCVPercent))
-      } else {
-        UnweightedRes <- apply(X = KIDmat, MARGIN = 2, FUN = KVote, K=K, Weighting=FALSE, TieBreaker=TieBreaker)
-        ResTable <- cbind(rownames(BalancedDistMat), BalancingGrps$Newfactors, UnweightedRes)
-        colnames(ResTable) <- c('ID', 'True.Classification','Unweighted.Classification')
-        UnweightedCCVPercent <- sum(BalancingGrps$Newfactors==UnweightedRes)/length(BalancingGrps$Newfactors)
-        ResultsTable <- c(ResultsTable, UnweightedCCVPercent)
-      }
+      ResultsTable <- rbind(ResultsTable, c(WeightedCCVPercent, UnweightedCCVPercent))
+
 
       if (Verbose==TRUE){
         IterRes[[iter]] <- ResTable
@@ -144,36 +140,27 @@ KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, Sa
     Kweightmat <- AdjSortedDistMat[-1,]
 
 
-    if (Weighted==TRUE){
-      KArray <- array(data = NA, dim = c(dim(KIDmat), 2))
-      KArray[,,1] <- KIDmat
-      KArray[,,2] <- Kweightmat
+    KArray <- array(data = NA, dim = c(dim(KIDmat), 2))
+    KArray[,,1] <- KIDmat
+    KArray[,,2] <- Kweightmat
 
-      dimnames(KArray) <- list(dimnames(Kweightmat)[[1]], dimnames(Kweightmat)[[2]], c('Call', 'Weight'))
+    dimnames(KArray) <- list(dimnames(Kweightmat)[[1]], dimnames(Kweightmat)[[2]], c('Call', 'Weight'))
 
-      WeightedRes <- apply(X = KArray, MARGIN = 2, FUN = KVote, K=K, Weighting=Weighted, TieBreaker=TieBreaker)
-      UnweightedRes <- apply(X = KArray[,,1], MARGIN = 2, FUN = KVote, K=K, Weighting=FALSE, TieBreaker=TieBreaker)
+    WeightedRes <- apply(X = KArray, MARGIN = 2, FUN = KVote, K=K, Weighting=TRUE, TieBreaker=TieBreaker)
+    UnweightedRes <- apply(X = KArray[,,1], MARGIN = 2, FUN = KVote, K=K, Weighting=FALSE, TieBreaker=TieBreaker)
 
-      ResTable <- cbind(rownames(DistMat), GroupMembership, WeightedRes, UnweightedRes)
-      colnames(ResTable) <- c('ID', 'True.Classification', 'Weighted.Classification', 'Unweighted.Classification')
+    ResTable <- cbind(rownames(DistMat), GroupMembership, WeightedRes, UnweightedRes)
+    colnames(ResTable) <- c('ID', 'True.Classification', 'Weighted.Classification', 'Unweighted.Classification')
 
-      WeightedCCVPercent <- sum(GroupMembership==WeightedRes)/length(GroupMembership)
-      UnweightedCCVPercent <- sum(GroupMembership==UnweightedRes)/length(GroupMembership)
+    WeightedCCVPercent <- sum(GroupMembership==WeightedRes)/length(GroupMembership)
+    UnweightedCCVPercent <- sum(GroupMembership==UnweightedRes)/length(GroupMembership)
 
-      ResultsTable <- rbind(ResultsTable, c(WeightedCCVPercent, UnweightedCCVPercent))
-    } else {
-      UnweightedRes <- apply(X = KIDmat, MARGIN = 2, FUN = KVote, K=K, Weighting=FALSE, TieBreaker=TieBreaker)
-      ResTable <- cbind(rownames(DistMat), GroupMembership, UnweightedRes)
-      colnames(ResTable) <- c('ID', 'True.Classification','Unweighted.Classification')
-
-      UnweightedCCVPercent <- sum(GroupMembership==UnweightedRes)/length(GroupMembership)
-      ResultsTable <- c(ResultsTable, UnweightedCCVPercent)
-    }
+    ResultsTable <- rbind(ResultsTable, c(WeightedCCVPercent, UnweightedCCVPercent))
 
     colnames(ResultsTable) <- c('Weighted', 'Unweighted')
 
     if (Verbose==TRUE){
-      return(list(CCV.Percentages=ResultsTable, Individual.Classifications=ResTable))
+      return(list(CCV.Percentages=ResultsTable, Individual.Classifications=as.data.frame(ResTable)))
     } else {
       return(list(CCV.Percentages=ResultsTable))
     }
