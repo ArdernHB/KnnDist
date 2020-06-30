@@ -288,7 +288,7 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
     if (Verbose==TRUE){
       return(ResultsTable)
     } else {
-      return(list(Unweighted=colMeans(ResultsTable$Unweighted.Results), Weighted=colMeans(ResultsTable$Weighted.Results)))
+      return(list(Unweighted.Results=colMeans(ResultsTable$Unweighted.Results), Weighted.Results=colMeans(ResultsTable$Weighted.Results)))
     }
 
 
