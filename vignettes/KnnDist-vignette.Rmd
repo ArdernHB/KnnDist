@@ -1,0 +1,151 @@
+---
+title: "KnnDist-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{KnnDist-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(KnnDist)
+```
+
+
+KnnDist: Classification methods by k-nearest neighbour with distance input
+--------------------------------------------------------------------------------------------------
+
+This vignette walks the reader through the KnnDist package using a published morphological dataset of rat lower first molars. The goal of this vignette is to provide the user with the code and tools to use this packages main functionality. The main goal of the k-nearest neighbour (k-NN) method is to accurately and efficiently classify specimens of unknown group membership to user defined groups. This classification method uses a set number of nearest neighbours (called k) to assign group classification; for example, if there are two groups and k is set to 10 then the 10 nearest neighbours to the unknown specimen will be examined and the unknown specimen will be classified to whichever group makes up >5 of the nearest neighbours. The tools presented here allow are both for classification based on user input distances but also for approaches to optimise k (namely stepwise increase approaches).
+
+Rattini tribe species discrimination using dental morphology: dataset and distance calculations
+-------------------------------------------------------------------------------------------------------
+
+The dataset we will use here indlues 14 species of the Rattini tribe with a total of 395 specimens. 
+
+``` {r Example dataset table of specimen numbers}
+table(RatData$Info$Species)
+```
+
+The sample sizes are unequal with the smallest being *Rattus nitidus*
+
+``` {r Identifying smallest sample size}
+names(which(table(RatData$Info$Species)==min(table(RatData$Info$Species))))
+```
+
+For this dataset we will work with the raw shape data. Procrustes distances must first be calculated among the specimens use in the `ProcDistanceTable` function, which is a wrapper of the `procdist` function from the `shapes` package that outputs a square distance materix. This function is slow as it needs to calculate the pairwise Procrustes superimpositions among each pair of specimen. Use the function \code{ProcDistanceTablePar} for large datasets to make use of parallel processing. Note this will only be faster for large datasets as with small ones the time taken to recompile the results of each parallel process can create a bottleneck. For example, using an Intel(R) Core(TM) i7-8565U CPU with 4 cores and 8 threads to process this full dataset the single core processing takes ~2.36mins whereas parallel processing takes ~1.17mins; with this processor parallel processing becomes more efficient than single thread processing around 60 specimens.
+
+Parallel processing is not demonstrated in this vignette as it can complicate automatic vignette and package checks; parallel versions of functions can be typically be accessed using the same function name with 'Par' at the end.
+
+``` {r Calculating procrustes distance matrix among specimens}
+RatDistMat <- ProcDistanceTable(RatData$LMs, 
+                                Method = 'full', 
+                                RefIDs = dimnames(RatData$LMs)[[3]])
+```
+
+k-NN by simple majority
+-------------------------------------------------------------------------------------------------------
+
+In the first instance we can take an single individual and treat it as an unknown to assess the approach of the k-NN classification analysis. The function KnnIDingSingleInd will return the results of both a simple count of the majority vote and also the results of a weighted majority vote (see below for details). In the first instance we will examine the simple majority vote process and results.
+
+``` {r Classification by nearest 10 neighbours}
+KnnIDingSingleInd(X = RatDistMat[1,-1],
+                  K = 10,
+                  GroupMembership = RatData$Info$Species[-1],
+                  TieBreaker = 'Report')
+```
+This is achieved by taking the distance matrix, sorting it and taking the *k* (10 in this case) nearest neighbours. A simple majority vote count can be used to determine group membership classification.
+
+``` {r Classification by nearest 10 neighbours breakdown}
+Distance2Unknown <- cbind(RatDistMat[1,-1], RatData$Info$Species[-1])
+SortNearest <- sort(Distance2Unknown[,1], index.return=TRUE)
+
+NearestNeighbours <- Distance2Unknown[SortNearest$ix,]
+
+table(NearestNeighbours[1:10,2])
+
+```
+The TieBreaker argument implements one of three options for dealing with a tie; either it can randomly select an individual ('Random'); report the multiple classification calls with classifications separated by '_' ('Report'); or it can remove the result, returning 'UnIDed' ('Remove'). This last TieBreaker option is primarily for leave-one-out correct cross-validation procedures (see below).
+
+``` {r Classification by nearest 10 neighbours with a tied vote example}
+KnnIDingSingleInd(X = RatDistMat[24,-24],
+                  K = 10,
+                  GroupMembership = RatData$Info$Species[-24],
+                  TieBreaker = 'Remove')
+```
+
+k-NN by weighted majority
+-------------------------------------------------------------------------------------------------------
+
+A possible approach to weighting the voting system is to divide 1 by the distance to the specimen being identified. Then the sum of the *k* nearest weights is calculated for each group. The specimen is assigned to the group with the highest summed weight. This can produces different results from the majority vote approach; the simplest example of this is when the unweighted majority vote (i.e. count) is tied, the weighted result is likely to be different.
+
+``` {r Classification by nearest 10 neighbours with difference in weighted v unweighted results}
+KnnIDingSingleInd(X = RatDistMat[24,-24],
+                  K = 10,
+                  GroupMembership = RatData$Info$Species[-24],
+                  TieBreaker = 'Report')
+```
+
+For example in the below case the simple vote is tied between *R. argentiventer* and *R. tanezumi*.
+
+
+``` {r Classification by nearest 10 neighbours with a tied vote breakdown}
+Distance2Unknown <- cbind(RatDistMat[24,-24], RatData$Info$Species[-24])
+SortNearest <- sort(Distance2Unknown[,1], index.return=TRUE)
+
+NearestNeighbours <- Distance2Unknown[SortNearest$ix,]
+
+UnweightedScores <- table(NearestNeighbours[1:10,2])
+
+sort(UnweightedScores, decreasing = TRUE)
+
+```
+
+The weighted approach returns a single result with no tied vote.
+
+``` {r Classification by nearest 10 neighbours calculating the weighted result breakdown}
+
+WeightedScores <- aggregate(1/as.numeric(NearestNeighbours[1:10,1]), FUN=sum, by=list(NearestNeighbours[1:10,2]))
+
+WeightedScores[sort(WeightedScores[,2], 
+                    index.return=TRUE, 
+                    decreasing = TRUE)$ix,]
+
+```
+
+As demonstrated above the k-NN process is relatively simple to implement. The KnnDist package carries out the above operations in a simple manor. However, assessing the accuracy of *k* and then efficiently optimising *k* when sample sizes are also unbalanced is a little less straight forward. Here the KnnDist package provides a couple of options.
+
+Optimising k with unbalanced sample sizes
+-------------------------------------------------------------------------------------------------------
+
+The first step is to assess the accuracy of the k-NN procedure on a given training dataset. This can be achieved with a leave-one-out correct-cross-validation analyses. We will start with *k* set to 10 as described above. We will set the TieBreaker argument to 'Remove'; this means that if their is no majority vote and the specimen will be removed and considered unidentified. The function will return both the results of a weighted and an unweighted k-NN analysis. Note that we set the IgnorePrompts argument to TRUE in the vignette, the default is FALSE and is primarily for when resampling to equal sample size and Verbose outputs are desired, which can lead to an extremely slow process. If both equal sample size and verbose is required then the KnnDistCVPar function which implements parallel processing is likely to be much faster.
+
+
+``` {r Simple correct cross validation}
+KnnDistCV(DistMat = RatDistMat, 
+          GroupMembership = RatData$Info$Species, 
+          K = 10, 
+          Equal = FALSE, 
+          TieBreaker = 'Remove',
+          IgnorePrompts = TRUE)
+```
+
+This dataset includes groups of unequal sample size, to therefore will require additional special treatment. Therefore, we can iteratively resample to equal sample size; this can be achieved by setting the Equal argument to TRUE and adding the EqualIter argument to the number of times this will be resampled to equal sample size. Note that this process can be slow when a high EqualIter number is set, this process can be greatly sped up using the parallel version of this function KnnDistCVPar, which accepts the same arguments as the KnnDistCV function.
+
+``` {r Correct cross validation with resampling to equal sample size}
+KnnDistCV(DistMat = RatDistMat, 
+          GroupMembership = RatData$Info$Species, 
+          K = 10, 
+          Equal = TRUE, 
+          EqualIter = 100,
+          TieBreaker = 'Remove',
+          IgnorePrompts = TRUE)
+```
+
+
