@@ -172,6 +172,7 @@ UnequalKOpt <- KnnDistCVStepwise(DistMat = RatDistMat,
                                  Kmax = 10,
                                  Equal = FALSE,
                                  PrintProg = FALSE,
+                                 Verbose = TRUE,
                                  PlotResults = TRUE,
                                  TieBreaker = 'Remove')
 
@@ -189,8 +190,24 @@ EqualKOpt <- KnnDistCVStepwise(DistMat = RatDistMat,
                                Equal = TRUE,
                                EqualIter = 10,
                                PrintProg = FALSE,
+                               Verbose = TRUE,
                                PlotResults = TRUE,
                                TieBreaker = 'Remove')
 
 ```
+
+Finally, if the stepwise *k* optimisation has already been carried out and you wish to plot the results again, then the function PlotStepwise can be used as follows (note that additional stepwise results can be added to the plot using the Add argument):
+
+``` {r Plotting stepwise *k* results}
+PlotStepwise(StepwiseResultsMat = EqualKOpt$Unweighted, 
+             Percentiles = c(0.05,.95), 
+             PlotCol = 'lightblue')
+
+PlotStepwise(StepwiseResultsMat = EqualKOpt$Weighted.Results, 
+             Percentiles = c(0.05,.95),
+             PlotCol = 'darkblue',
+             Add = TRUE)
+
+```
+
 
