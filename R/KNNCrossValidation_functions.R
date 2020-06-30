@@ -197,6 +197,8 @@ KnnDistCV <- function(DistMat, GroupMembership, K, Equal=TRUE, EqualIter=100, Sa
 
 
 KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualIter=100, SampleSize=NA, TieBreaker=c('Random', 'Remove', 'Report'), Verbose=FALSE, PrintProg=TRUE, PlotResults=TRUE){
+  #DistMat = RatDistMat;  GroupMembership = RatData$Info$Species;  Kmax = 10;  PrintProg = FALSE; Equal = FALSE;  PlotResults = TRUE; TieBreaker = 'Remove'
+
 
 
   MinSamp <- min(table(as.character(GroupMembership)))
@@ -258,13 +260,6 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
 
     }
 
-
-    if (Verbose==TRUE){
-      return(ResultsTable)
-    } else {
-      return(list(Unweighted=colMeans(ResultsTable$Unweighted.Results), Weighted=colMeans(ResultsTable$Weighted.Results)))
-    }
-
     if (PlotResults==TRUE){
 
 
@@ -289,6 +284,13 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
 
       graphics::legend('bottomright', legend = c('Weighted', 'Unweighted'), col = c('darkblue', 'lightblue'), lty=1, lwd=3, bty = 'o')
     }
+
+    if (Verbose==TRUE){
+      return(ResultsTable)
+    } else {
+      return(list(Unweighted=colMeans(ResultsTable$Unweighted.Results), Weighted=colMeans(ResultsTable$Weighted.Results)))
+    }
+
 
   } else {
 
@@ -324,34 +326,35 @@ KnnDistCVStepwise <- function(DistMat, GroupMembership, Kmax, Equal=TRUE, EqualI
       ResultsTable$Weighted.Results[1, K] <- WeightedCCVPercent
     }
 
+    if (PlotResults==TRUE){
 
-    return(list(CCV.Percentages=ResultsTable))
-  }
+      graphics::plot(y = colMeans(ResultsTable$Unweighted.Results), x = 1:Kmax, type = 'n', ylim = c(10,105), ylab = 'CCV %', xlab = 'K')
+      graphics::abline(h = seq(from = 20, to = 100, by = 10), v = seq(from = 2, to = Kmax, by =2), lty = '1919')
 
-  if (PlotResults==TRUE){
 
-    graphics::plot(y = colMeans(ResultsTable$Unweighted.Results), x = 1:Kmax, type = 'n', ylim = c(10,105), ylab = 'CCV %', xlab = 'K')
-    graphics::abline(h = seq(from = 20, to = 100, by = 10), v = seq(from = 2, to = Kmax, by =2), lty = '1919')
-
-    if (Equal==TRUE){
       WeightRange <- apply(ResultsTable$Weighted.Results, MARGIN = 2, FUN = stats::quantile, probs = c(.05, .95))
       graphics::polygon(x = c(1:Kmax, Kmax:1),
-              y = c(WeightRange[1,], WeightRange[2,Kmax:1])*100,
-              col = transpar('darkblue', alpha = 75),
-              border = NA)
+                        y = c(WeightRange[1,], WeightRange[2,Kmax:1])*100,
+                        col = transpar('darkblue', alpha = 75),
+                        border = NA)
 
       graphics::lines(y = colMeans(ResultsTable$Weighted.Results*100), x = 1:Kmax, col='darkblue', lwd=3)
 
       UnweightRange <- apply(ResultsTable$Unweighted.Results, MARGIN = 2, FUN = stats::quantile, probs = c(.05, .95))
       graphics::polygon(x = c(1:Kmax, Kmax:1),
-              y = c(UnweightRange[1,], UnweightRange[2,Kmax:1])*100,
-              col = transpar('lightblue', alpha = 75),
-              border = NA)
+                        y = c(UnweightRange[1,], UnweightRange[2,Kmax:1])*100,
+                        col = transpar('lightblue', alpha = 75),
+                        border = NA)
       graphics::lines(y = colMeans(ResultsTable$Unweighted.Results*100), x = 1:Kmax, col='lightblue', lwd=3)
-    }
 
-    graphics::legend('bottomright', legend = c('Weighted', 'Unweighted'), col = c('darkblue', 'lightblue'), lty=1, lwd=3, bty = 'o')
+      graphics::legend('bottomright', legend = c('Weighted', 'Unweighted'), col = c('darkblue', 'lightblue'), lty=1, lwd=3, bty = 'o')
+
+      }
+
+      return(list(CCV.Percentages=ResultsTable))
   }
 
-
 }
+
+
+
