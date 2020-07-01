@@ -120,6 +120,27 @@ WeightedScores[sort(WeightedScores[,2],
 
 As demonstrated above the *k*-NN process is relatively simple to implement. The KnnDist package carries out the above operations in a simple manor. However, assessing the accuracy of *k* and then efficiently optimising *k* when sample sizes are also unbalanced is a little less straight forward. Here the KnnDist package provides a couple of options.
 
+A visualization of the differences between weighted and unweighted classifcation is provided below. Note this example is carried out with a provided dummy data as the example Rattini tribe dataset is hyperdimensional and representation of it in 2D can causing seemingly distant nearest neighbours to be nearest neighbours, because they are closer on other dimensions.
+
+``` {r Visualisation of k-NN with weighted and unweighted differences}
+Nearest <- sort(DummyData$DistMat[1,], index.return=TRUE)
+
+plot(DummyData$Coords, pch=16, col=DummyData$Groups)
+
+apply(X = DummyData$Coords[Nearest$ix[1:7],], MARGIN = 1, FUN = function(SpecLoc, X){lines(rbind(SpecLoc, X))}, SpecLoc = DummyData$Coords[1,])
+
+```
+
+When *k*-NN is applied with *k* set to 6 the outcome of the unweighted analysis is mixed, but when carried out with a weighted analysis the result is the red group due to the closer proximity of those specimens.
+
+``` {r Visualisation of k-NN with weighted and unweighted differences}
+KnnIDingSingleInd(DummyData$DistMat[1,-1],
+                  K = 6, 
+                  GroupMembership = DummyData$Groups[-1],
+                  TieBreaker = 'Report')
+```
+
+
 Assessing accuracy of *k*-NN and unequal sample size
 -------------------------------------------------------------------------------------------------------
 
