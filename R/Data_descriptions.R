@@ -15,3 +15,18 @@
 #' }
 #' @source \url{https://doi.org/10.1007/s10914-017-9423-8}
 "RatData"
+
+
+#' Dummy Data dataset
+#'
+#' A dummy dataset for visualisation of difference between weighted and unweighted
+#' k-NN analyses
+#'
+#' @format A list of 3 objects:
+#' \describe{
+#'   \item{Coords}{A matrix of dummy coordinates}
+#'   \item{Groups}{A vector of dummy group classifications}
+#'   \item{DistMat}{A distance matrix of Euclidean distances among dummy specimens}
+#' }
+"DummyData"
+
