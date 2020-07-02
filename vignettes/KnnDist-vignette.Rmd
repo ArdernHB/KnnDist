@@ -133,7 +133,7 @@ apply(X = DummyData$Coords[Nearest$ix[1:7],], MARGIN = 1, FUN = function(SpecLoc
 
 When *k*-NN is applied with *k* set to 6 the outcome of the unweighted analysis is mixed, but when carried out with a weighted analysis the result is the red group due to the closer proximity of those specimens.
 
-``` {r Visualisation of k-NN with weighted and unweighted differences}
+``` {r k-NN result with weighted and unweighted differences}
 KnnIDingSingleInd(DummyData$DistMat[1,-1],
                   K = 6, 
                   GroupMembership = DummyData$Groups[-1],
@@ -203,7 +203,7 @@ Again, using unequal sample size might bias the results and present an inaccurat
 Note that resampling to equal sample size combined with stepwise *k* optimisation is an extremely slow process and it is therefore advised the KnnDistCVStepwisePar is used. Here KnnDistCVStepwise is used because of the limitations of providing a vignette with parallel processing functions. As a result, the EqualIter argument has been set to be low at 10, in practice it is advisable to resample to equal sample many more than 10 times and the default is 100.
 
 
-``` {r k optimisation with stepwise correct cross validation with resampling}
+``` {r k optimisation with stepwise correct cross validation with resampling: Rats}
 EqualKOpt <- KnnDistCVStepwise(DistMat = RatDistMat,
                                GroupMembership = RatData$Info$Species,
                                Kmax = 10,
@@ -216,16 +216,66 @@ EqualKOpt <- KnnDistCVStepwise(DistMat = RatDistMat,
 
 ```
 
-Finally, if the stepwise *k* optimisation has already been carried out and you wish to plot the results again, then the function PlotStepwise can be used as follows (note that additional stepwise results can be added to the plot using the Add argument):
+So far we have applied the KnnDist functions to geometric morphometric full Procrustes distances calculated from rat teeth, but these functions can be applied to any dataset from which a user might wish to calculate distances or dissimilarities. Comparisons of bird songs is often carried as a dissimilarity metric base around dynamic time warping. User defined groups such as regional/local dialects or age groups can be assessed using *k*-NN analyses.
+
+``` {r k optimisation with stepwise correct cross validation with resampling: Blue chaffinch}
+BirdTotalEqualKOpt <- KnnDistCVStepwise(DistMat = BirdsongData$SongDistMat,
+                               GroupMembership = BirdsongData$Groups$Regions,
+                               Kmax = 10,
+                               Equal = TRUE,
+                               EqualIter = 10,
+                               PrintProg = FALSE,
+                               Verbose = TRUE,
+                               PlotResults = TRUE,
+                               TieBreaker = 'Remove')
+
+```
+
+Note that when running the above we get a warning that the Kmax number is higher than the smallest sample size.
+
+``` {r Blue chaffinch dataset sample sizes}
+table(BirdsongData$Groups$Regions)
+
+```
+
+The 'Central' region specimens are a widely dispersed group of individuals that do not clearly belong to the other regional groups and the sample size is very small. Therefore we can try to remove them.
+
+``` {r k optimisation: Blue chaffinch central group removed}
+Rem <- which(BirdsongData$Groups$Regions=='Central')
+
+BirdSubsetEqualKOpt <- KnnDistCVStepwise(DistMat = BirdsongData$SongDistMat[-Rem,-Rem],
+                               GroupMembership = BirdsongData$Groups$Regions[-Rem],
+                               Kmax = 10,
+                               Equal = TRUE,
+                               EqualIter = 10,
+                               PrintProg = FALSE,
+                               Verbose = TRUE,
+                               PlotResults = TRUE,
+                               TieBreaker = 'Remove')
+
+```
+
+
+Finally, if the stepwise *k* optimisation has already been carried out we can plot the results again and together with other analyses using the function PlotStepwise. This can be done as follows (note that additional stepwise results can be added to the plot using the Add argument):
 
 ``` {r Plotting stepwise k results}
-PlotStepwise(StepwiseResultsMat = EqualKOpt$Unweighted, 
+PlotStepwise(StepwiseResultsMat = BirdTotalEqualKOpt$Unweighted, 
              Percentiles = c(0.05,.95), 
-             PlotCol = 'lightblue')
+             PlotCol = 'pink')
 
-PlotStepwise(StepwiseResultsMat = EqualKOpt$Weighted.Results, 
+PlotStepwise(StepwiseResultsMat = BirdTotalEqualKOpt$Weighted.Results, 
+             Percentiles = c(0.05,.95),
+             PlotCol = 'red',
+             Add = TRUE)
+
+PlotStepwise(StepwiseResultsMat = BirdSubsetEqualKOpt$Weighted.Results, 
              Percentiles = c(0.05,.95),
              PlotCol = 'darkblue',
+             Add = TRUE)
+
+PlotStepwise(StepwiseResultsMat = BirdSubsetEqualKOpt$Unweighted.Results, 
+             Percentiles = c(0.05,.95),
+             PlotCol = 'lightblue',
              Add = TRUE)
 
 ```
