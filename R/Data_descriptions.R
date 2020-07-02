@@ -30,3 +30,16 @@
 #' }
 "DummyData"
 
+#' Blue chaffinch birdsong dataset
+#'
+#' A birdsong dissimilarity dataset calculated using dynamic time warping. The
+#' dataset includes 116 specimens from across Tenerife. These represent at least
+#' three regional birdsong groups, with a fourth dispersed group from across the
+#' centre of the island. The fourth group may not constitute a real group.
+#'
+#' @format A list of 2 objects:
+#' \describe{
+#'   \item{SongDistMat}{A square matrix of dynamic time warping dissimilarities calculated among the songs of 116 individuals.}
+#'   \item{Groups}{A dataframe of 4 columns including specimen IDs, Lat Long coordinates and Regional grouping.}
+#' }
+"BirdsongData"
