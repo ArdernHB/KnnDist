@@ -258,7 +258,7 @@ BirdSubsetEqualKOpt <- KnnDistCVStepwise(DistMat = BirdsongData$SongDistMat[-Rem
 
 Finally, if the stepwise *k* optimisation has already been carried out we can plot the results again and together with other analyses using the function PlotStepwise. This can be done as follows (note that additional stepwise results can be added to the plot using the Add argument):
 
-``` {r Plotting stepwise k results}
+``` {r Plotting stepwise k results for comparison among different analyses}
 PlotStepwise(StepwiseResultsMat = BirdTotalEqualKOpt$Unweighted, 
              Percentiles = c(0.05,.95), 
              PlotCol = 'pink')
