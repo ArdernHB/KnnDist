@@ -56,7 +56,7 @@ KnnDistCVPar <- function(DistMat, GroupMembership, K, EqualIter=100, SampleSize=
     #Data=PairwiseShapeDistMat; GroupMembership=chr(Groups[GrpPos])
 
     if (is.na(GroupSize)){
-      minSampSize <- min(table(GroupMembership))
+      minSampSize <- min(table(as.character(GroupMembership)))
     } else {
       minSampSize <- GroupSize
     }
