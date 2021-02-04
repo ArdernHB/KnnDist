@@ -73,7 +73,7 @@ KnnDistIDingGroup <- function(DistMat, GroupMembership, UnknownIdentifier = 'Unk
   UnkDists <- DistMat[UnkPos,-UnkPos]
   colnames(UnkDists) <- GroupMembership[-UnkPos]
 
-  RawIDRes <- apply(X = UnkDists, MARGIN = 1, FUN = KnnIDingSingleInd, K=K, Membership=colnames(UnkDists), TieBreaker = TieBreaker)
+  RawIDRes <- apply(X = UnkDists, MARGIN = 1, FUN = KnnIDingSingleInd, K=K, GroupMembership=colnames(UnkDists), TieBreaker = TieBreaker)
 
   Results <- do.call('rbind', RawIDRes)
 
